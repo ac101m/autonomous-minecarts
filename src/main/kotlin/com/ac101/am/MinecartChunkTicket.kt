@@ -8,7 +8,7 @@ import net.minecraft.util.math.ChunkPos
 
 class MinecartChunkTicket(minecart: AbstractMinecartEntity) {
     companion object {
-        const val IDLE_TICK_COUNT = 60      // 3 seconds
+        const val IDLE_TICK_COUNT = 6000    // 5 minutes
         const val TICKET_RADIUS = 2         // 3x3 square of entity ticking chunks
 
         private val CHUNK_POS_TO_LONG: ChunkPos.() -> Long = ChunkPos::toLong
@@ -37,15 +37,6 @@ class MinecartChunkTicket(minecart: AbstractMinecartEntity) {
     fun update(minecart: AbstractMinecartEntity) {
         ticketPosition = minecart.chunkPos
         timeout = IDLE_TICK_COUNT
-    }
-
-    private fun removeTicket() {
-        world.chunkManager.threadedAnvilChunkStorage.ticketManager.removeTicket(
-            ticketType,
-            ticketPosition,
-            TICKET_RADIUS,
-            ticketPosition
-        )
     }
 
     private fun createTicket() {
