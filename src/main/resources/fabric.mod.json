@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "autonomous-minecarts",
+  "version": "${version}",
+  "name": "Autonomous Minecarts",
+  "description": "A server side mod which allows minecarts to pass through unloaded chunks.",
+  "authors": [
+    "alexander.cramb.94@gmail.com"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "server": [
+      "com.ac101m.am.environment.FabricServerEnvironment"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "minecraft": "~1.20.4",
+    "java": ">=17",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  },
+  "package": "com.ac101m.am"
+}
