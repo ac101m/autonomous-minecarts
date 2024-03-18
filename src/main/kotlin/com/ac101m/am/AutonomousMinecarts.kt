@@ -1,4 +1,4 @@
-package com.ac101.am
+package com.ac101m.am
 
 import com.ac101m.am.environment.ServerEnvironment
 import com.ac101m.am.environment.FabricServerEnvironment

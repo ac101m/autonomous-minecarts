@@ -1,6 +1,6 @@
 package com.ac101m.am.environment
 
-import com.ac101.am.AutonomousMinecarts
+import com.ac101m.am.AutonomousMinecarts
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
