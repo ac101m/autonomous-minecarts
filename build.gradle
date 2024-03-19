@@ -20,6 +20,12 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
+
+    // External dependencies
+    implementation include("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
+    implementation include("com.fasterxml.jackson.core:jackson-annotations:$jackson_version")
+    implementation include("com.fasterxml.jackson.core:jackson-core:$jackson_version")
+    implementation include("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version")
 }
 
 java {
