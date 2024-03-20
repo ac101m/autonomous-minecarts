@@ -23,8 +23,8 @@ class FabricServerEnvironment : ServerEnvironment, DedicatedServerModInitializer
             plugin.initialize()
         }
 
-        ServerLifecycleEvents.SERVER_STOPPING.register { _ ->
-            plugin.shutdown()
+        ServerLifecycleEvents.BEFORE_SAVE.register { _, _, _ ->
+            plugin.saveActiveTickets()
         }
 
         ServerTickEvents.END_WORLD_TICK.register { world ->

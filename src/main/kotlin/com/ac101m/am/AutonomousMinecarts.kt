@@ -49,17 +49,13 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
         }
 
         startupState = try {
-            StartupState.load(statePath).also {
-                statePath.toFile().delete()
-            }
+            StartupState.load(statePath)
         } catch (e: NoSuchFileException) {
             return
         }
     }
 
-    fun shutdown() {
-        log.info("Shutting down autonomous minecarts")
-
+    fun saveActiveTickets() {
         val tickets = ArrayList<StartupTicket>()
 
         activeMinecarts.values.forEach { ticket ->
@@ -82,7 +78,6 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
         for (ticket in state.tickets) {
             environment.server.getWorldByName(ticket.worldName)?.let { world ->
                 val chunkPos = ChunkPos(ticket.x, ticket.z)
-                log.info("Creating startup ticket at $chunkPos!")
                 world.createChunkTicket(startupTicketType, chunkPos, config.chunkLoadRadius)
             }
         }
