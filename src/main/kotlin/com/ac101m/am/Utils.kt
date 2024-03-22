@@ -31,16 +31,6 @@ class Utils {
         }
 
         /**
-         * Remove a chunk ticket to a specific world.
-         * @param type Type of the chunk ticket (includes name and timeout info).
-         * @param position Chunk position to create the ticket for.
-         * @param radius Radius of the chunk ticket.
-         */
-        fun ServerWorld.removeChunkTicket(type: ChunkTicketType<ChunkPos>, position: ChunkPos, radius: Int) {
-            chunkManager.threadedAnvilChunkStorage.ticketManager.removeTicket(type, position, radius, position)
-        }
-
-        /**
          * Get a world based on the name of the world.
          * @param name Name of the world to find.
          * @return The world with the specified name, or null if no world is found.

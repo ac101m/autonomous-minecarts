@@ -36,7 +36,7 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
     /**
      * Loads mod configuration and active minecart tickets prior to last server shutdown
      */
-    fun initialize() {
+    fun onServerStart() {
         log.info("Starting autonomous minecarts...")
 
         val configPath = Path.of(environment.configDirectory.toString(), CONFIG_FILE_NAME)
@@ -55,13 +55,15 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
         }
     }
 
-    fun saveActiveTickets() {
+    fun beforeWorldSave() {
+        log.info("Persisting active minecart tickets")
+
         val tickets = ArrayList<StartupTicket>()
 
         activeMinecarts.values.forEach { ticket ->
             val startupTicket = StartupTicket(
-                x = ticket.position.x,
-                z = ticket.position.z,
+                x = ticket.chunkPos.x,
+                z = ticket.chunkPos.z,
                 worldName = ticket.world.registryKey.value.toString()
             )
             tickets.add(startupTicket)
@@ -86,7 +88,7 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
     /**
      * Check for moving minecarts within a world and update the position of their chunk loading tickets.
      */
-    fun afterWorldTick(world: ServerWorld) {
+    fun beforeWorldTick(world: ServerWorld) {
         startupState?.let {
             createStartupTickets(it)
             startupState = null
@@ -105,7 +107,7 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
             if (activeMinecarts.containsKey(minecart.id)) {
                 activeMinecarts[minecart.id]!!.update(minecart)
             } else {
-                activeMinecarts[minecart.id] = MinecartChunkTicket(minecart, config.idleTimeoutTicks, config.chunkLoadRadius)
+                activeMinecarts[minecart.id] = MinecartChunkTicket(minecart, config)
             }
         }
     }

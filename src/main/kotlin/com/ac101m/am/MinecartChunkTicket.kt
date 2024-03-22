@@ -1,6 +1,7 @@
 package com.ac101m.am
 
 import com.ac101m.am.Utils.Companion.createChunkTicket
+import com.ac101m.am.persistence.Config
 import net.minecraft.entity.vehicle.AbstractMinecartEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.ChunkPos
@@ -8,31 +9,46 @@ import net.minecraft.util.math.ChunkPos
 
 class MinecartChunkTicket(
     minecart: AbstractMinecartEntity,
-    private val idleTimeoutTicks: Int,
-    private val radius: Int
+    private val config: Config
 ) {
+    private val type = Utils.createTicketType("am_${minecart.id}", config.chunkTicketDuration)
+
     val world = minecart.world as ServerWorld
-    private val ticketType = Utils.createTicketType("am_${minecart.id}", 0)
 
-    private var counter: Int = idleTimeoutTicks
+    private var idleCounter: Int = config.idleTimeoutTicks
+    private var ticketRefreshCounter: Int = config.chunkTicketDuration
 
-    var position: ChunkPos = minecart.chunkPos
+    var chunkPos: ChunkPos = minecart.chunkPos
         private set
 
     init {
-        world.createChunkTicket(ticketType, position, radius)
+        createTicket(chunkPos)
+    }
+
+    private fun createTicket(position: ChunkPos) {
+        world.createChunkTicket(type, position, config.chunkLoadRadius)
+        ticketRefreshCounter = config.chunkTicketDuration
     }
 
     fun tick(): Int {
-        if (counter > 0) {
-            counter -= 1
-            world.createChunkTicket(ticketType, position, radius)
+        if (ticketRefreshCounter <= 0) {
+            createTicket(chunkPos)
+        } else {
+            ticketRefreshCounter -= 1
         }
-        return counter
+
+        if (idleCounter > 0) {
+            idleCounter -= 1
+        }
+
+        return idleCounter
     }
 
     fun update(minecart: AbstractMinecartEntity) {
-        position = minecart.chunkPos
-        counter = idleTimeoutTicks
+        if (chunkPos != minecart.chunkPos) {
+            createTicket(minecart.chunkPos)
+            chunkPos = minecart.chunkPos
+        }
+        idleCounter = config.idleTimeoutTicks
     }
 }

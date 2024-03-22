@@ -23,7 +23,15 @@ data class Config(
      * Defaults to 2, for a 3x3 area of entity ticking chunks.
      */
     @JsonProperty("chunkLoadRadius", required = true)
-    val chunkLoadRadius: Int = 2
+    val chunkLoadRadius: Int = 2,
+
+    /**
+     * The duration of created chunk tickets.
+     * Higher values will cause chunk tickets to last longer and be created less frequently.
+     * A value of 0 means tickets will be created in every tick.
+     */
+    @JsonProperty("ticketDuration", required = true)
+    val chunkTicketDuration: Int = 60
 ) {
     companion object {
         private val mapper = ObjectMapper()

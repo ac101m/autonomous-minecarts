@@ -20,15 +20,15 @@ class FabricServerEnvironment : ServerEnvironment, DedicatedServerModInitializer
 
         ServerLifecycleEvents.SERVER_STARTING.register { server ->
             this.server = server
-            plugin.initialize()
+            plugin.onServerStart()
         }
 
         ServerLifecycleEvents.BEFORE_SAVE.register { _, _, _ ->
-            plugin.saveActiveTickets()
+            plugin.beforeWorldSave()
         }
 
-        ServerTickEvents.END_WORLD_TICK.register { world ->
-            plugin.afterWorldTick(world)
+        ServerTickEvents.START_WORLD_TICK.register { world ->
+            plugin.beforeWorldTick(world)
         }
 
         ServerTickEvents.END_SERVER_TICK.register { _ ->
