@@ -6,7 +6,9 @@ import java.nio.file.Path
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 
-
+/**
+ * Remember to update the configuration section in the readme!
+ */
 data class Config(
     /**
      * Ticks after which chunk tickets associated with unmoving or destroyed minecarts are deleted.
