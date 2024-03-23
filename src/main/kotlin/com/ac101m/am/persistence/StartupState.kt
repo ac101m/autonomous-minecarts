@@ -7,11 +7,11 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 
 /**
- * Persistence object for one-time wake tickets.
+ * Data object to contain persistent state for the mod.
  */
 data class StartupState(
     @JsonProperty("tickets", required = true)
-    val tickets: List<StartupTicket> = ArrayList()
+    val tickets: List<PersistentMinecartTicket> = ArrayList()
 ) {
     companion object {
         private val mapper = ObjectMapper()

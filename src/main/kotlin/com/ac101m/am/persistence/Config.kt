@@ -7,9 +7,6 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 
 
-/**
- * Class represents global config.
- */
 data class Config(
     /**
      * Ticks after which chunk tickets associated with unmoving or destroyed minecarts are deleted.
@@ -31,7 +28,7 @@ data class Config(
      * A value of 0 means tickets will be created in every tick.
      */
     @JsonProperty("ticketDuration", required = true)
-    val chunkTicketDuration: Int = 60
+    val ticketDuration: Int = 60
 ) {
     companion object {
         private val mapper = ObjectMapper()

@@ -1,24 +1,27 @@
 package com.ac101m.am
 
 import com.ac101m.am.Utils.Companion.createChunkTicket
-import com.ac101m.am.persistence.Config
+import com.ac101m.am.persistence.PersistentMinecartTicket
 import net.minecraft.entity.vehicle.AbstractMinecartEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.ChunkPos
+import java.util.*
 
 
 class MinecartChunkTicket(
-    minecart: AbstractMinecartEntity,
-    private val config: Config
+    val world: ServerWorld,
+    private var chunkPos: ChunkPos,
+    private val ticketDuration: Int,
+    private val timeoutDuration: Int,
+    private val radius: Int,
+    idleCounterInit: Int = 0
 ) {
-    private val type = Utils.createTicketType("am_${minecart.id}", config.chunkTicketDuration)
+    private val type = Utils.createTicketType("am_minecart", ticketDuration)
 
-    val world = minecart.world as ServerWorld
+    private var ticketRefreshCounter: Int = 0
+    private var idleCounter: Int = idleCounterInit
 
-    private var idleCounter: Int = config.idleTimeoutTicks
-    private var ticketRefreshCounter: Int = config.chunkTicketDuration
-
-    var chunkPos: ChunkPos = minecart.chunkPos
+    var isDone: Boolean = false
         private set
 
     init {
@@ -26,22 +29,22 @@ class MinecartChunkTicket(
     }
 
     private fun createTicket(position: ChunkPos) {
-        world.createChunkTicket(type, position, config.chunkLoadRadius)
-        ticketRefreshCounter = config.chunkTicketDuration
+        world.createChunkTicket(type, position, radius)
+        ticketRefreshCounter = 0
     }
 
-    fun tick(): Int {
-        if (ticketRefreshCounter <= 0) {
-            createTicket(chunkPos)
+    fun tick() {
+        if (ticketRefreshCounter < ticketDuration) {
+            ticketRefreshCounter += 1
         } else {
-            ticketRefreshCounter -= 1
+            createTicket(chunkPos)
         }
 
-        if (idleCounter > 0) {
-            idleCounter -= 1
+        if (idleCounter < timeoutDuration) {
+            idleCounter += 1
+        } else {
+            isDone = true
         }
-
-        return idleCounter
     }
 
     fun update(minecart: AbstractMinecartEntity) {
@@ -49,6 +52,16 @@ class MinecartChunkTicket(
             createTicket(minecart.chunkPos)
             chunkPos = minecart.chunkPos
         }
-        idleCounter = config.idleTimeoutTicks
+        idleCounter = 0
+    }
+
+    fun getPersistenceObject(minecartId: UUID): PersistentMinecartTicket {
+        return PersistentMinecartTicket(
+            minecartId = minecartId.toString(),
+            x = chunkPos.x,
+            z = chunkPos.z,
+            idleTicks = idleCounter,
+            worldName = world.registryKey.value.toString()
+        )
     }
 }

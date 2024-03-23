@@ -1,12 +1,11 @@
 package com.ac101m.am
 
-import com.ac101m.am.Utils.Companion.createChunkTicket
 import com.ac101m.am.Utils.Companion.getWorldByName
 import com.ac101m.am.environment.ServerEnvironment
 import com.ac101m.am.environment.FabricServerEnvironment
 import com.ac101m.am.persistence.Config
 import com.ac101m.am.persistence.StartupState
-import com.ac101m.am.persistence.StartupTicket
+import com.ac101m.am.persistence.PersistentMinecartTicket
 import net.minecraft.entity.Entity
 import net.minecraft.entity.vehicle.AbstractMinecartEntity
 import net.minecraft.predicate.entity.EntityPredicates
@@ -16,6 +15,9 @@ import net.minecraft.util.math.ChunkPos
 import org.slf4j.LoggerFactory
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
+import java.util.UUID
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * Mod implementation logic lives in here.
@@ -31,10 +33,10 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
     private lateinit var config: Config
     private var startupState: StartupState? = null
 
-    private val activeMinecarts = HashMap<Int, MinecartChunkTicket>()
+    private val activeMinecarts = HashMap<UUID, MinecartChunkTicket>()
 
     /**
-     * Loads mod configuration and active minecart tickets prior to last server shutdown
+     * Loads mod configuration and active minecarts
      */
     fun onServerStart() {
         log.info("Starting autonomous minecarts...")
@@ -43,30 +45,29 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
         val statePath = Path.of(environment.configDirectory.toString(), STATE_FILE_NAME)
 
         config = try {
+            log.info("Loading configuration: $configPath")
             Config.load(configPath)
         } catch (e: NoSuchFileException) {
+            log.info("Configuration file missing, loading defaults.")
             Config().apply { save(configPath) }
         }
 
         startupState = try {
+            log.info("Loading persisted minecart tickets: $statePath")
             StartupState.load(statePath)
         } catch (e: NoSuchFileException) {
+            log.info("Minecart ticket state file, ignoring.")
             return
         }
+
+        log.info("Autonomous minecarts started!")
     }
 
     fun beforeWorldSave() {
-        log.info("Persisting active minecart tickets")
+        val tickets = ArrayList<PersistentMinecartTicket>()
 
-        val tickets = ArrayList<StartupTicket>()
-
-        activeMinecarts.values.forEach { ticket ->
-            val startupTicket = StartupTicket(
-                x = ticket.chunkPos.x,
-                z = ticket.chunkPos.z,
-                worldName = ticket.world.registryKey.value.toString()
-            )
-            tickets.add(startupTicket)
+        activeMinecarts.entries.forEach { (id, ticket) ->
+            tickets.add(ticket.getPersistenceObject(id))
         }
 
         val statePath = Path.of(environment.configDirectory.toString(), STATE_FILE_NAME)
@@ -74,23 +75,46 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
         StartupState(tickets).save(statePath)
     }
 
-    private fun createStartupTickets(state: StartupState) {
-        val startupTicketType = Utils.createTicketType("am_startup", 200)
+    /**
+     * Load persisted minecart tickets.
+     */
+    private fun restoreTickets(tickets: List<PersistentMinecartTicket>) {
+        log.info("Restoring minecart chunk tickets for ${tickets.size} minecarts...")
 
-        for (ticket in state.tickets) {
-            environment.server.getWorldByName(ticket.worldName)?.let { world ->
-                val chunkPos = ChunkPos(ticket.x, ticket.z)
-                world.createChunkTicket(startupTicketType, chunkPos, config.chunkLoadRadius)
+        for (ticket in tickets) {
+            val world = environment.server.getWorldByName(ticket.worldName)
+
+            if (world == null) {
+                log.warn("Persisted minecart ticket references world ${ticket.worldName}, but no such world exists!")
+                continue
             }
+
+            val minecartId = try {
+                UUID.fromString(ticket.minecartId)
+            } catch (e: Exception) {
+                log.warn("Minecart ticket at chunk (x=${ticket.x}, z=${ticket.z}) has invalid cart UUID, ignoring.")
+                continue
+            }
+
+            activeMinecarts[minecartId] = MinecartChunkTicket(
+                world = world,
+                chunkPos = ChunkPos(ticket.x, ticket.z),
+                ticketDuration = config.ticketDuration,
+                timeoutDuration = config.idleTimeoutTicks,
+                radius = config.chunkLoadRadius,
+                idleCounterInit = ticket.idleTicks
+            )
         }
+
+        log.info("Minecart chunk tickets restored.")
     }
 
     /**
-     * Check for moving minecarts within a world and update the position of their chunk loading tickets.
+     * Check for moving minecarts within a world and update the position of their chunk tickets.
      */
     fun beforeWorldTick(world: ServerWorld) {
         startupState?.let {
-            createStartupTickets(it)
+            restoreTickets(it.tickets)
             startupState = null
         }
 
@@ -104,20 +128,28 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
         }
 
         for (minecart in movingMinecarts) {
-            if (activeMinecarts.containsKey(minecart.id)) {
-                activeMinecarts[minecart.id]!!.update(minecart)
+            if (activeMinecarts.containsKey(minecart.uuid)) {
+                activeMinecarts[minecart.uuid]!!.update(minecart)
             } else {
-                activeMinecarts[minecart.id] = MinecartChunkTicket(minecart, config)
+                activeMinecarts[minecart.uuid] = MinecartChunkTicket(
+                    world = world,
+                    chunkPos = minecart.chunkPos,
+                    radius = config.chunkLoadRadius,
+                    ticketDuration = config.ticketDuration,
+                    timeoutDuration = config.idleTimeoutTicks
+                )
             }
         }
     }
 
     /**
-     * Ticks all loaded minecarts, removes any that have timed out or are no longer alive
+     * Ticks all loaded minecarts, removes any that have timed out
      */
-    fun afterServerTick() {
+    fun beforeServerTick() {
         activeMinecarts.entries.removeIf { entry ->
-            entry.value.tick() == 0
+            entry.value.isDone
         }
+
+        activeMinecarts.values.forEach { it.tick() }
     }
 }

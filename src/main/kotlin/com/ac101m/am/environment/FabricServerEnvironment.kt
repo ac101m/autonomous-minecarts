@@ -31,8 +31,8 @@ class FabricServerEnvironment : ServerEnvironment, DedicatedServerModInitializer
             plugin.beforeWorldTick(world)
         }
 
-        ServerTickEvents.END_SERVER_TICK.register { _ ->
-            plugin.afterServerTick()
+        ServerTickEvents.START_SERVER_TICK.register { _ ->
+            plugin.beforeServerTick()
         }
     }
 }
