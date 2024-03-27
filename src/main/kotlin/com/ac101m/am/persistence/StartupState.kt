@@ -11,7 +11,10 @@ import kotlin.io.path.outputStream
  */
 data class StartupState(
     @JsonProperty("tickets", required = true)
-    val tickets: List<PersistentMinecartTicket> = ArrayList()
+    val tickets: List<PersistentMinecartTicket> = ArrayList(),
+
+    @JsonProperty("version", required = true)
+    val version: Int = 0
 ) {
     companion object {
         private val mapper = ObjectMapper()

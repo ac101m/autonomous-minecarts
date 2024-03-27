@@ -12,6 +12,7 @@ import net.minecraft.predicate.entity.EntityPredicates
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.ChunkPos
+import net.minecraft.util.math.Vec3d
 import org.slf4j.LoggerFactory
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
@@ -24,7 +25,7 @@ import kotlin.collections.HashMap
  */
 class AutonomousMinecarts(private val environment: ServerEnvironment) {
     companion object {
-        private const val CONFIG_FILE_NAME = "autonomous-minecarts.json"
+        private const val CONFIG_FILE_NAME = "autonomous-minecarts.properties"
         private const val STATE_FILE_NAME = "autonomous-minecarts-tickets.json"
 
         private val log = LoggerFactory.getLogger(FabricServerEnvironment::class.java)
@@ -124,7 +125,7 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
         world.collectEntitiesByType(typeFilter, EntityPredicates.VALID_ENTITY, minecarts)
 
         val movingMinecarts = minecarts.filter { cart ->
-            cart.velocity.length() > 0.01
+            cart.velocity.length() > config.idleThreshold
         }
 
         for (minecart in movingMinecarts) {
