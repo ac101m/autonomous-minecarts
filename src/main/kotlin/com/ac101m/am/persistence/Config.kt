@@ -32,7 +32,14 @@ data class Config(
      * Higher values will cause chunk tickets to last longer and be created less frequently.
      * A value of 0 means tickets will be created in every tick.
      */
-    var ticketDuration: Int = 60
+    var ticketDuration: Int = 60,
+
+    /**
+     * Smoothing factor for cart position.
+     * The mod maintains an exponential moving average of cart positions. If the average position of the cart
+     * does not change sufficiently (because it's moving, but staying in the same area), then the cart will be unloaded.
+     */
+    var smoothingFactor: Double = 0.01
 ) {
     companion object {
         private const val IDLE_TIMEOUT_IDENTIFIER = "idleTimeoutTicks"
