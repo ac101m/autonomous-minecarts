@@ -2,7 +2,6 @@ package com.ac101m.am
 
 import com.ac101m.am.persistence.Config
 import com.ac101m.am.persistence.PersistentMinecartTicket
-import com.ac101m.am.persistence.StartupState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.vehicle.AbstractMinecartEntity
 import net.minecraft.predicate.entity.EntityPredicates
@@ -10,7 +9,6 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.ChunkPos
 import org.slf4j.LoggerFactory
-import java.nio.file.Path
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap

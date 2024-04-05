@@ -2,9 +2,7 @@ package com.ac101m.am
 
 import com.ac101m.am.persistence.Config
 import net.minecraft.entity.vehicle.AbstractMinecartEntity
-import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
-import kotlin.math.min
 
 /**
  * Tracks minecart behaviour and decides whether a cart is idle or not.

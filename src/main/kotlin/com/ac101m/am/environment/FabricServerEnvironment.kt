@@ -4,11 +4,9 @@ import com.ac101m.am.AutonomousMinecarts
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.server.MinecraftServer
 import java.nio.file.Path
-
 
 class FabricServerEnvironment : ServerEnvironment, DedicatedServerModInitializer {
     private lateinit var plugin: AutonomousMinecarts

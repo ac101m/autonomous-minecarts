@@ -12,7 +12,7 @@ import java.util.*
  */
 class TicketHandler(
     private val world: ServerWorld,
-    initChunkPos: ChunkPos,
+    private var chunkPos: ChunkPos,
     private val config: Config,
     private var idleCounter: Int = 0
 ) {
@@ -21,9 +21,6 @@ class TicketHandler(
     private var refreshCounter: Int = 0
 
     val isTimedOut get() = idleCounter >= config.idleTimeoutTicks
-
-    var chunkPos: ChunkPos = initChunkPos
-        private set
 
     init {
         createTicket(chunkPos)
