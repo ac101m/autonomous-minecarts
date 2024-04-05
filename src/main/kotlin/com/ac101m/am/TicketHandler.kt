@@ -50,25 +50,23 @@ class TicketHandler(
         } else {
             createTicket(chunkPos)
         }
-    }
 
-    /**
-     * Reset the idle counter.
-     */
-    fun notifyActive() {
-        idleCounter = 0
-    }
-
-    /**
-     * Increment the idle counter.
-     */
-    fun notifyIdle() {
         if (idleCounter < config.idleTimeoutTicks) {
             idleCounter += 1
         }
     }
 
-    fun getPersistenceObject(id: UUID): PersistentMinecartTicket {
+    /**
+     * Reset the idle counter.
+     */
+    fun resetIdleCounter() {
+        idleCounter = 0
+    }
+
+    /**
+     * Return a persistable object representative of this ticket.
+     */
+    fun getPersistableObject(id: UUID): PersistentMinecartTicket {
         return PersistentMinecartTicket(
             minecartId = id.toString(),
             x = chunkPos.x,

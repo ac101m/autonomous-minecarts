@@ -2,7 +2,6 @@ package com.ac101m.am
 
 import com.ac101m.am.persistence.Config
 import net.minecraft.entity.vehicle.AbstractMinecartEntity
-import net.minecraft.util.math.Vec3d
 
 /**
  * Tracks minecart behaviour and decides whether a cart is idle or not.
@@ -11,36 +10,46 @@ class MinecartTracker(
     initMinecart: AbstractMinecartEntity,
     private val config: Config
 ) {
-    private var wasUpdated: Boolean = true
+    private var wasUpdated: Boolean = false
 
     var minecart = initMinecart
         private set
 
-    private var realVelocity = Vec3d(0.0, 0.0, 0.0)
+    /**
+     * Vector exponential moving average of cart position.
+     * Used to filter out carts which are moving but not leaving a confined area.
+     */
     private var smoothedPos = minecart.pos
-    private var prevPos = minecart.pos
 
-    var minecartIsIdle: Boolean = true
+    /**
+     * "Active" minecarts are minecarts which are moving in a way which the mods loading criteria
+     */
+    var minecartIsActive: Boolean = false
         private set
 
+    /**
+     * Update the state associated with the minecart (moving average, is active etc)
+     */
     fun update(minecart: AbstractMinecartEntity) {
-        wasUpdated = true
+        this.minecart = minecart
 
-        // Update tracker state
-        realVelocity = minecart.pos.subtract(prevPos)
-        smoothedPos = minecart.pos.multiply(config.smoothingFactor).add(smoothedPos!!.multiply(1.0 - config.smoothingFactor))
-        prevPos = minecart.pos
+        smoothedPos = minecart.pos.multiply(config.positionAverageFactor).add(smoothedPos!!.multiply(1.0 - config.positionAverageFactor))
 
-        // Compute minecart idle-ness
-        minecartIsIdle = if (realVelocity.length() < config.idleThreshold) {
-            true
-        } else if (smoothedPos!!.subtract(minecart.pos).length() < 20) {
-            true
-        } else {
+        minecartIsActive = if (minecart.pos.length() < config.idleThreshold) {
             false
+        } else if (smoothedPos!!.subtract(minecart.pos).length() < config.positionAverageDistance) {
+            false
+        } else {
+            true
         }
+
+        wasUpdated = true
     }
 
+    /**
+     * Return whether the tracker has been updated and reset the isUpdated state.
+     * Used to check if the minecart is still present in the world.
+     */
     fun getAndClearUpdated(): Boolean {
         val tmp = wasUpdated
         wasUpdated = false

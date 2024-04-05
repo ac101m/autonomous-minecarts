@@ -89,13 +89,9 @@ class WorldTracker(
 
         // Update minecart trackers for all tracked minecarts
         minecarts.forEach { cart ->
-            val tracker = trackedMinecarts[cart.uuid]
-
-            if (tracker != null) {
-                tracker.update(cart)
-            } else {
-                trackedMinecarts[cart.uuid] =  MinecartTracker(cart, config)
-            }
+            trackedMinecarts.computeIfAbsent(cart.uuid) {
+                MinecartTracker(cart, config)
+            }.update(cart)
         }
 
         // Iterate through tracked minecarts
@@ -107,7 +103,7 @@ class WorldTracker(
             }
 
             // Create ticker handlers for active minecarts if not already present
-            if (!tracker.minecartIsIdle) {
+            if (tracker.minecartIsActive) {
                 ticketHandlers.computeIfAbsent(id) {
                     TicketHandler(
                         world = tracker.minecart.world as ServerWorld,
@@ -115,17 +111,11 @@ class WorldTracker(
                         config = config,
                         idleCounter = 0
                     )
-                }
+                }.resetIdleCounter()
             }
 
-            // Update ticket handlers depending on whether the cart is idle or not
-            ticketHandlers[id]?.let { ticketHandler ->
-                ticketHandler.updatePosition(tracker.minecart.chunkPos)
-                when (tracker.minecartIsIdle) {
-                    true -> ticketHandler.notifyIdle()
-                    else -> ticketHandler.notifyActive()
-                }
-            }
+            // Update ticket handlers positions
+            ticketHandlers[id]?.updatePosition(tracker.minecart.chunkPos)
 
             false
         }
@@ -162,7 +152,7 @@ class WorldTracker(
     fun getPersistableTickets(): List<PersistentMinecartTicket> {
         return ArrayList<PersistentMinecartTicket>().also { tickets ->
             ticketHandlers.entries.forEach { (id, ticket) ->
-                tickets.add(ticket.getPersistenceObject(id))
+                tickets.add(ticket.getPersistableObject(id))
             }
         }
     }
