@@ -87,11 +87,15 @@ class WorldTracker(
         minecarts.clear()
         world.collectEntitiesByType(minecartTypeFilter, EntityPredicates.VALID_ENTITY, minecarts)
 
-        // Update minecart trackers for all tracked minecarts
+        // Update minecart trackers for all tracked minecarts, if the minecart is moving
         minecarts.forEach { cart ->
-            trackedMinecarts.computeIfAbsent(cart.uuid) {
-                MinecartTracker(cart, config)
-            }.update(cart)
+            if (cart.velocity.length() > 0.000001) {
+                trackedMinecarts.computeIfAbsent(cart.uuid) {
+                    MinecartTracker(cart, config)
+                }.update(cart)
+            } else {
+                trackedMinecarts.remove(cart.uuid)
+            }
         }
 
         // Iterate through tracked minecarts
