@@ -111,7 +111,6 @@ class WorldTracker(
             // Create ticker handlers for active minecarts if not already present
             if (!tracker.minecartIsIdle) {
                 ticketHandlers.computeIfAbsent(id) {
-                    println("Creating ticket @ ${tracker.minecart.chunkPos}")
                     TicketHandler(
                         world = tracker.minecart.world as ServerWorld,
                         initChunkPos =  tracker.minecart.chunkPos,
@@ -135,11 +134,6 @@ class WorldTracker(
         // Remove any ticket handlers which have timed out
         ticketHandlers.entries.removeIf { (_, ticket) ->
             ticket.tick()
-
-            if (ticket.isTimedOut) {
-                println("Removing timed out ticket @ ${ticket.chunkPos}")
-            }
-
             ticket.isTimedOut
         }
     }

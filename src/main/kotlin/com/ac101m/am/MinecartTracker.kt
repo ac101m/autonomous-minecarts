@@ -28,10 +28,6 @@ class MinecartTracker(
     fun update(minecart: AbstractMinecartEntity) {
         wasUpdated = true
 
-        if (minecart.velocity.length() > 0.001) {
-            println("id=${minecart.uuid}, pos=${minecart.pos}, prevPos=$prevPos, idle=$minecartIsIdle")
-        }
-
         // Update tracker state
         realVelocity = minecart.pos.subtract(prevPos)
         smoothedPos = minecart.pos.multiply(config.smoothingFactor).add(smoothedPos!!.multiply(1.0 - config.smoothingFactor))

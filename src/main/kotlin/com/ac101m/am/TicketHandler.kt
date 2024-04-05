@@ -39,7 +39,6 @@ class TicketHandler(
      */
     fun updatePosition(newChunkPos: ChunkPos) {
         if (newChunkPos != chunkPos) {
-            println("Updating ticket: $chunkPos -> $newChunkPos")
             createTicket(newChunkPos)
             chunkPos = newChunkPos
         }
