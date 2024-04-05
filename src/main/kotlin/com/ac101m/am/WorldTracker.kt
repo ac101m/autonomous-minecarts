@@ -112,7 +112,8 @@ class WorldTracker(
                     TicketHandler(
                         world = tracker.minecart.world as ServerWorld,
                         chunkPos =  tracker.minecart.chunkPos,
-                        config = config
+                        config = config,
+                        idleCounter = 0
                     )
                 }
             }
@@ -150,7 +151,8 @@ class WorldTracker(
         ticketHandlers[minecartUuid] = TicketHandler(
             world = world,
             chunkPos = ChunkPos(persistedTicket.x, persistedTicket.z),
-            config = config
+            config = config,
+            idleCounter = persistedTicket.idleTicks
         )
     }
 

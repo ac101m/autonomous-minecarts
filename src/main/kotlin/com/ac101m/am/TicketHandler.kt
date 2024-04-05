@@ -14,7 +14,7 @@ class TicketHandler(
     private val world: ServerWorld,
     private var chunkPos: ChunkPos,
     private val config: Config,
-    private var idleCounter: Int = 0
+    private var idleCounter: Int
 ) {
     private val type = Utils.createTicketType("am_minecart", config.ticketDuration)
 
