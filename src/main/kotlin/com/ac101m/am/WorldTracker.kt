@@ -111,7 +111,7 @@ class WorldTracker(
                 ticketHandlers.computeIfAbsent(id) {
                     TicketHandler(
                         world = tracker.minecart.world as ServerWorld,
-                        initChunkPos =  tracker.minecart.chunkPos,
+                        chunkPos =  tracker.minecart.chunkPos,
                         config = config
                     )
                 }
@@ -149,7 +149,7 @@ class WorldTracker(
 
         ticketHandlers[minecartUuid] = TicketHandler(
             world = world,
-            initChunkPos = ChunkPos(persistedTicket.x, persistedTicket.z),
+            chunkPos = ChunkPos(persistedTicket.x, persistedTicket.z),
             config = config
         )
     }
