@@ -88,6 +88,8 @@ data class Config(
                 properties.getProperty(POSITION_AVERAGE_DISTANCE_IDENTIFIER)?.let { property ->
                     config.positionAverageDistance = property.toDouble()
                 }
+
+                config.save(path)
             }
         }
     }
