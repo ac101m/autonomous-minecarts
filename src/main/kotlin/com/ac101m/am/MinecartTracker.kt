@@ -25,24 +25,11 @@ class MinecartTracker(
     var minecartIsIdle: Boolean = true
         private set
 
-    var minecartIsFrozen: Boolean = false
-        private set
-
     fun update(minecart: AbstractMinecartEntity) {
         wasUpdated = true
 
-        val testThing = minecart.world.players.isEmpty()
-
-        // Determine if the cart is frozen
-        minecartIsFrozen = minecart.pos == prevPos && minecart.velocity.length() > 0.000000001
-
         if (minecart.velocity.length() > 0.001) {
-            println("id=${minecart.uuid}, pos=${minecart.pos}, prevPos=$prevPos, idle=$minecartIsIdle, frozen=$minecartIsFrozen, collide=$testThing")
-        }
-
-        // If the minecart is frozen, don't update the tracker
-        if (minecartIsFrozen) {
-            return
+            println("id=${minecart.uuid}, pos=${minecart.pos}, prevPos=$prevPos, idle=$minecartIsIdle")
         }
 
         // Update tracker state

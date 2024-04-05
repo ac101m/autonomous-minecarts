@@ -28,24 +28,16 @@ class FabricServerEnvironment : ServerEnvironment, DedicatedServerModInitializer
             plugin.beforeWorldSave()
         }
 
-        ServerTickEvents.END_WORLD_TICK.register { world ->
-            plugin.afterWorldTick(world)
-        }
-
         ServerTickEvents.START_SERVER_TICK.register { _ ->
             plugin.beforeServerTick()
         }
 
-        ServerWorldEvents.LOAD.register { _, world ->
-            println("World loading: ${world.registryKey.value}")
+        ServerTickEvents.START_WORLD_TICK.register { world ->
+            plugin.beforeWorldTick(world)
         }
 
-        ServerWorldEvents.UNLOAD.register { _, world ->
-            println("World unloading: ${world.registryKey.value}")
-        }
-
-        ServerTickEvents.END_SERVER_TICK.register { _ ->
-            plugin.afterServerTick()
+        ServerTickEvents.END_WORLD_TICK.register { world ->
+            plugin.afterWorldTick(world)
         }
     }
 }
