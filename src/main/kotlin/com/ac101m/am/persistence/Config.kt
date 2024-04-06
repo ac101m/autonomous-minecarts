@@ -40,7 +40,7 @@ data class Config(
      * hang around in one area. The mod maintains an exponential moving average of cart positions. If the average
      * position of the cart does not change sufficiently (because it's moving, but staying in the same area), then the
      * cart will be unloaded. Lower values increase the duration of the average.
-     * WarningL Setting the value too low relative to positionAverageDistance may result in carts not loading!
+     * Warning: Setting the value too low relative to positionAverageDistance may result in carts not loading!
      */
     var positionAverageFactor: Double = 0.01,
 
@@ -49,7 +49,7 @@ data class Config(
      * The distance in blocks away from the moving average (see positionAverageFactor) of the cart position which a cart
      * must be in order to be considered active. Higher values increase the distance from the moving average which a
      * cart must be in order to be considered active.
-     * Warning: Setting the value too high relative to positionAverageVector may result in carts not loading!
+     * Warning: Setting the value too high relative to positionAverageFactor may result in carts not loading!
      */
     var positionAverageDistance: Double = 20.0
 ) {
