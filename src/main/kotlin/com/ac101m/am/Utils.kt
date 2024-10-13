@@ -27,7 +27,7 @@ class Utils {
          * @param radius Radius of the chunk ticket.
          */
         fun ServerWorld.createChunkTicket(type: ChunkTicketType<ChunkPos>, position: ChunkPos, radius: Int) {
-            chunkManager.threadedAnvilChunkStorage.ticketManager.addTicket(type, position, radius, position)
+            chunkManager.addTicket(type, position, radius, position)
         }
 
         /**
