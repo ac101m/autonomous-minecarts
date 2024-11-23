@@ -1,7 +1,7 @@
 package com.ac101m.am
 
 import com.ac101m.am.Utils.Companion.getWorldByName
-import com.ac101m.am.environment.ServerEnvironment
+import com.ac101m.am.environment.Environment
 import com.ac101m.am.persistence.Config
 import com.ac101m.am.persistence.StartupState
 import com.ac101m.am.persistence.PersistentMinecartTicket
@@ -16,7 +16,7 @@ import kotlin.collections.HashMap
 /**
  * Mod implementation logic lives in here.
  */
-class AutonomousMinecarts(private val environment: ServerEnvironment) {
+class AutonomousMinecarts(private val environment: Environment) {
     companion object {
         private const val CONFIG_FILE_NAME = "autonomous-minecarts.properties"
         private const val STATE_FILE_NAME = "autonomous-minecarts-tickets.json"
@@ -36,7 +36,7 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
         log.info("Starting autonomous minecarts...")
 
         val configPath = Path.of(environment.configDirectory.toString(), CONFIG_FILE_NAME)
-        val statePath = Path.of(environment.configDirectory.toString(), STATE_FILE_NAME)
+        val statePath = Path.of(environment.worldDirectory.toString(), STATE_FILE_NAME)
 
         config = try {
             log.info("Loading configuration: $configPath")
@@ -67,7 +67,7 @@ class AutonomousMinecarts(private val environment: ServerEnvironment) {
             allTickets.addAll(worldTracker.getPersistableTickets())
         }
 
-        val statePath = Path.of(environment.configDirectory.toString(), STATE_FILE_NAME)
+        val statePath = Path.of(environment.worldDirectory.toString(), STATE_FILE_NAME)
 
         StartupState(allTickets).save(statePath)
     }

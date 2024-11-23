@@ -10,8 +10,8 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "server": [
-      "com.ac101m.am.environment.FabricServerEnvironment"
+    "main": [
+      "com.ac101m.am.environment.FabricEnvironment"
     ]
   },
   "depends": {

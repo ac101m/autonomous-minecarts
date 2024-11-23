@@ -6,7 +6,8 @@ import java.nio.file.Path
 /**
  * Abstraction over server frameworks/APIs
  */
-interface ServerEnvironment {
+interface Environment {
     var server: MinecraftServer
     val configDirectory: Path
+    val worldDirectory: Path
 }

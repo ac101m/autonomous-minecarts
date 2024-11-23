@@ -1,20 +1,23 @@
 package com.ac101m.am.environment
 
 import com.ac101m.am.AutonomousMinecarts
-import net.fabricmc.api.DedicatedServerModInitializer
+import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.server.MinecraftServer
+import net.minecraft.util.WorldSavePath
 import java.nio.file.Path
 
-class FabricServerEnvironment : ServerEnvironment, DedicatedServerModInitializer {
+class FabricEnvironment : Environment, ModInitializer {
     private lateinit var plugin: AutonomousMinecarts
 
     override lateinit var server: MinecraftServer
     override val configDirectory: Path = FabricLoader.getInstance().configDir
+    override val worldDirectory: Path
+        get() = server.getSavePath(WorldSavePath.ROOT)
 
-    override fun onInitializeServer() {
+    override fun onInitialize() {
         plugin = AutonomousMinecarts(this)
 
         ServerLifecycleEvents.SERVER_STARTING.register { server ->
