@@ -3,7 +3,7 @@
   "id": "autonomous-minecarts",
   "version": "${version}",
   "name": "Autonomous Minecarts",
-  "description": "A server side mod which allows minecarts to pass through unloaded chunks.",
+  "description": "A fabric mod which allows minecarts to pass through unloaded chunks.",
   "authors": [
     "alexander.cramb.94@gmail.com"
   ],
@@ -16,7 +16,7 @@
   },
   "depends": {
     "fabricloader": ">=0.16.9",
-    "minecraft": "~1.21.3",
+    "minecraft": "~1.21.4",
     "java": ">=21",
     "fabric-api": "*"
   },
