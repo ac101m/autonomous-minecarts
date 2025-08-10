@@ -22,6 +22,5 @@
   },
   "suggests": {
     "another-mod": "*"
-  },
-  "package": "com.ac101m.am"
+  }
 }
