@@ -35,9 +35,9 @@ class MinecartTracker(
 
         smoothedPos = minecart.pos.multiply(config.positionAverageFactor).add(smoothedPos!!.multiply(1.0 - config.positionAverageFactor))
 
-        minecartIsActive = if (minecart.pos.length() < config.idleThreshold) {
+        minecartIsActive = if (minecart.velocity.length() < config.idleThreshold) {
             false
-        } else if (smoothedPos!!.subtract(minecart.pos).length() < config.positionAverageDistance) {
+        } else if (smoothedPos.subtract(minecart.pos).length() < config.positionAverageDistance) {
             false
         } else {
             true
