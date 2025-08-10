@@ -5,7 +5,7 @@ import com.ac101m.am.persistence.Config
 import com.ac101m.am.persistence.PersistentMinecartTicket
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.ChunkPos
-import java.util.*
+import java.util.UUID
 
 /**
  * Manages ticket creation as a minecart moves.
@@ -16,8 +16,6 @@ class TicketHandler(
     private val config: Config,
     private var idleCounter: Int
 ) {
-    private val type = Utils.createTicketType("am_minecart", config.ticketDuration)
-
     private var refreshCounter: Int = 0
 
     val isTimedOut get() = idleCounter >= config.idleTimeoutTicks
@@ -27,7 +25,7 @@ class TicketHandler(
     }
 
     private fun createTicket(position: ChunkPos) {
-        world.createChunkTicket(type, position, config.chunkLoadRadius)
+        world.createChunkTicket(Utils.AM_CHUNK_TICKET_TYPE, position, config.chunkLoadRadius)
         refreshCounter = 1
     }
 
@@ -45,7 +43,7 @@ class TicketHandler(
      * Called on every tick, refreshes the ticket if appropriate.
      */
     fun tick() {
-        if (refreshCounter < config.ticketDuration) {
+        if (refreshCounter < Utils.AM_CHUNK_TICKET_TYPE.expiryTicks) {
             refreshCounter += 1
         } else {
             createTicket(chunkPos)

@@ -5,6 +5,7 @@ import com.ac101m.am.persistence.PersistentMinecartTicket
 import net.minecraft.entity.Entity
 import net.minecraft.entity.vehicle.AbstractMinecartEntity
 import net.minecraft.predicate.entity.EntityPredicates
+import net.minecraft.server.world.ChunkTicketType
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.ChunkPos

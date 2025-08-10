@@ -4,21 +4,10 @@ import net.minecraft.server.MinecraftServer
 import net.minecraft.server.world.ChunkTicketType
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.ChunkPos
-import kotlin.Comparator
 
 class Utils {
     companion object {
-        private val CHUNK_POS_TO_LONG: ChunkPos.() -> Long = ChunkPos::toLong
-
-        /**
-         * Create a custom chunk ticket type
-         * @param name The name of the chunk ticket type.
-         * @param expiryTicks Expiry time in game ticks.
-         * @return ChunkTicketType object.
-         */
-        fun createTicketType(name: String, expiryTicks: Int): ChunkTicketType<ChunkPos> {
-            return ChunkTicketType.create(name, Comparator.comparingLong(CHUNK_POS_TO_LONG), expiryTicks)
-        }
+        lateinit var AM_CHUNK_TICKET_TYPE: ChunkTicketType
 
         /**
          * Create a chunk ticket to a specific world.
@@ -26,8 +15,8 @@ class Utils {
          * @param position Chunk position to create the ticket for.
          * @param radius Radius of the chunk ticket.
          */
-        fun ServerWorld.createChunkTicket(type: ChunkTicketType<ChunkPos>, position: ChunkPos, radius: Int) {
-            chunkManager.addTicket(type, position, radius, position)
+        fun ServerWorld.createChunkTicket(type: ChunkTicketType, position: ChunkPos, radius: Int) {
+            chunkManager.addTicket(type, position, radius)
         }
 
         /**

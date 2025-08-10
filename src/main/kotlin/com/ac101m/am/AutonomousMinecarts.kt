@@ -5,6 +5,9 @@ import com.ac101m.am.environment.Environment
 import com.ac101m.am.persistence.Config
 import com.ac101m.am.persistence.StartupState
 import com.ac101m.am.persistence.PersistentMinecartTicket
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
+import net.minecraft.server.world.ChunkTicketType
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import org.slf4j.LoggerFactory
@@ -17,17 +20,34 @@ import kotlin.collections.HashMap
  * Mod implementation logic lives in here.
  */
 class AutonomousMinecarts(private val environment: Environment) {
-    companion object {
-        private const val CONFIG_FILE_NAME = "autonomous-minecarts.properties"
-        private const val STATE_FILE_NAME = "autonomous-minecarts-tickets.json"
-
-        private val log = LoggerFactory.getLogger(AutonomousMinecarts::class.java)
-    }
-
-    private lateinit var config: Config
+    private var config: Config
     private var startupState: StartupState? = null
 
     private val trackedWorlds = HashMap<Identifier, WorldTracker>()
+
+    init {
+        val configPath = Path.of(environment.configDirectory.toString(), CONFIG_FILE_NAME)
+
+        config = try {
+            log.info("Loading configuration: $configPath")
+            Config.load(configPath)
+        } catch (_: NoSuchFileException) {
+            log.info("Configuration file missing, loading defaults.")
+            Config().apply { save(configPath) }
+        }
+
+        val chunkTicketType = ChunkTicketType(
+            config.ticketDuration.toLong(),
+            false,
+            ChunkTicketType.Use.LOADING_AND_SIMULATION
+        )
+
+        Utils.AM_CHUNK_TICKET_TYPE = Registry.register(
+            Registries.TICKET_TYPE,
+            "am_minecart",
+            chunkTicketType
+        )
+    }
 
     /**
      * Load mod configuration and minecart tickets
@@ -35,23 +55,14 @@ class AutonomousMinecarts(private val environment: Environment) {
     fun onServerStart() {
         log.info("Starting autonomous minecarts...")
 
-        val configPath = Path.of(environment.configDirectory.toString(), CONFIG_FILE_NAME)
         val statePath = Path.of(environment.worldDirectory.toString(), STATE_FILE_NAME)
-
-        config = try {
-            log.info("Loading configuration: $configPath")
-            Config.load(configPath)
-        } catch (e: NoSuchFileException) {
-            log.info("Configuration file missing, loading defaults.")
-            Config().apply { save(configPath) }
-        }
 
         startupState = try {
             log.info("Loading persisted minecart tickets: $statePath")
             StartupState.load(statePath)
-        } catch (e: NoSuchFileException) {
+        } catch (_: NoSuchFileException) {
             log.info("Minecart ticket state file, ignoring.")
-            return
+            null
         }
 
         log.info("Autonomous minecarts started!")
@@ -113,5 +124,12 @@ class AutonomousMinecarts(private val environment: Environment) {
      */
     fun afterWorldTick(world: ServerWorld) {
         trackedWorlds[world.registryKey.value]!!.updateMinecarts(world)
+    }
+
+    companion object {
+        private const val CONFIG_FILE_NAME = "autonomous-minecarts.properties"
+        private const val STATE_FILE_NAME = "autonomous-minecarts-tickets.json"
+
+        private val log = LoggerFactory.getLogger(AutonomousMinecarts::class.java)
     }
 }
