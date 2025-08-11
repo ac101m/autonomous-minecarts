@@ -5,7 +5,6 @@ import com.ac101m.am.persistence.PersistentMinecartTicket
 import net.minecraft.entity.Entity
 import net.minecraft.entity.vehicle.AbstractMinecartEntity
 import net.minecraft.predicate.entity.EntityPredicates
-import net.minecraft.server.world.ChunkTicketType
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.ChunkPos
@@ -45,7 +44,7 @@ class WorldTracker(
     /**
      * Array containing all minecart entities.
      */
-    private val minecarts = ArrayList<AbstractMinecartEntity>()
+    private val worldCarts = ArrayList<AbstractMinecartEntity>()
 
     /**
      * Tracked minecarts by cart UUID.
@@ -66,7 +65,7 @@ class WorldTracker(
     fun updateWorldIdle(world: ServerWorld) {
         this.world = world
 
-        val nothingToLoad = world.players.isEmpty() && world.getForcedChunks().isEmpty()
+        val nothingToLoad = world.players.isEmpty() && world.forcedChunks.isEmpty()
 
         if (!nothingToLoad) {
             idleCounter = 0
@@ -85,29 +84,29 @@ class WorldTracker(
             return
         }
 
-        minecarts.clear()
-        world.collectEntitiesByType(minecartTypeFilter, EntityPredicates.VALID_ENTITY, minecarts)
+        // Get all carts in the world. Note that this will not find carts in unloaded areas of the map.
+        worldCarts.clear()
+        world.collectEntitiesByType(minecartTypeFilter, EntityPredicates.VALID_ENTITY, worldCarts)
 
-        // Update minecart trackers for all tracked minecarts, if the minecart is moving
-        minecarts.forEach { cart ->
-            if (cart.velocity.length() > 0.000001) {
-                trackedMinecarts.computeIfAbsent(cart.uuid) {
-                    MinecartTracker(cart, config)
-                }.update(cart)
+        // Update trackers for all minecarts with nonzero velocity, or create tracker if none exists.
+        worldCarts.forEach { cart ->
+            if (trackedMinecarts.contains(cart.uuid)) {
+                trackedMinecarts[cart.uuid]!!.update(cart)
             } else {
-                trackedMinecarts.remove(cart.uuid)
+                trackedMinecarts[cart.uuid] = MinecartTracker(cart, config)
             }
         }
 
         // Iterate through tracked minecarts
         trackedMinecarts.entries.removeIf { (id, tracker) ->
 
-            // Delete minecart tracker if it wasn't updated this tick (minecart is gone)
-            if (!tracker.getAndClearUpdated()) {
+            // Stop tracking carts that have been removed from the world.
+            if (tracker.minecart.removalReason?.shouldSave() == false) {
+                ticketHandlers.remove(tracker.minecart.uuid)
                 return@removeIf true
             }
 
-            // Create ticker handlers for active minecarts if not already present
+            // Create ticket handlers for active minecarts if not already present
             if (tracker.minecartIsActive) {
                 ticketHandlers.computeIfAbsent(id) {
                     TicketHandler(
@@ -125,7 +124,7 @@ class WorldTracker(
             false
         }
 
-        // Remove any ticket handlers which have timed out
+        // Tick ticket handlers and remove if timed out
         ticketHandlers.entries.removeIf { (_, ticket) ->
             ticket.tick()
             ticket.isTimedOut
@@ -138,7 +137,7 @@ class WorldTracker(
     fun loadPersistedTicket(persistedTicket: PersistentMinecartTicket) {
         val minecartUuid = try {
             UUID.fromString(persistedTicket.minecartId)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             log.warn("Minecart ticket at chunk (x=${persistedTicket.x}, z=${persistedTicket.z}) has invalid cart UUID, ignoring.")
             return
         }

@@ -10,8 +10,6 @@ class MinecartTracker(
     initMinecart: AbstractMinecartEntity,
     private val config: Config
 ) {
-    private var wasUpdated: Boolean = false
-
     var minecart = initMinecart
         private set
 
@@ -22,9 +20,11 @@ class MinecartTracker(
     private var smoothedPos = minecart.pos
 
     /**
-     * "Active" minecarts are minecarts which are moving in a way which the mods loading criteria
+     * "Active" minecarts are minecarts which are moving in a way that satisfies the mods loading criteria.
+     * A cart that is moving when the MinecartTracker is instantiated will be considered active for 1 tick.
+     * This allows carts to be loaded immediately when transitioning between dimensions.
      */
-    var minecartIsActive: Boolean = false
+    var minecartIsActive: Boolean = initMinecart.velocity.length() > 0.00001
         private set
 
     /**
@@ -42,17 +42,5 @@ class MinecartTracker(
         } else {
             true
         }
-
-        wasUpdated = true
-    }
-
-    /**
-     * Return whether the tracker has been updated and reset the isUpdated state.
-     * Used to check if the minecart is still present in the world.
-     */
-    fun getAndClearUpdated(): Boolean {
-        val tmp = wasUpdated
-        wasUpdated = false
-        return tmp
     }
 }
