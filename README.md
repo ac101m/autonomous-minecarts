@@ -18,7 +18,7 @@ The mod comes sensibly configured out of the box, but can also be customized by 
 
 ### Basic config options:
 
- - `idleTimeoutTicks` - How long minecarts should remain loaded once they become inactive. Defaults to 6000 ticks (5 minutes).
+- `idleTimeoutTicks` - How long minecarts should remain loaded once they become inactive. Defaults to 6000 ticks (5 minutes).
 - `idleThreshold` - The threshold velocity in blocks per tick above which a cart will be considered active. Defaults to 0.2 or 4 blocks per second (half the vanilla maximum cart speed).
 - `chunkLoadRadius` - How large an area to load surrounding each minecart in chunks. Defaults to 2 for a 3x3 area.
 - `ticketDuration` - Duration of chunk tickets created by the mod in ticks. Defaults to 60 (3 seconds).
@@ -27,7 +27,7 @@ The mod comes sensibly configured out of the box, but can also be customized by 
 
 The mod implements a mechanism for preventing carts which are moving but not going anywhere (e.g. are on small circular tracks), from loading chunks indefinitely.
 
-This mechanism works by calculating an exponental moving average of the carts position over time and comparing it to the carts current position. If the cart stays close to its average position, then it will be considered inactive and will eventually be unloaded as if it were stationary, in accordance with `idleTimeoutTicks`.
+This mechanism works by calculating an exponential moving average of the carts position over time and comparing it to the carts current position. If the cart stays close to its average position, then it will be considered inactive and will eventually be unloaded as if it were stationary, in accordance with `idleTimeoutTicks`.
 
 This behavior is controlled by the following configuration options:
 
