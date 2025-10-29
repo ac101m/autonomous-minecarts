@@ -110,7 +110,7 @@ class WorldTracker(
             if (tracker.minecartIsActive) {
                 ticketHandlers.computeIfAbsent(id) {
                     TicketHandler(
-                        world = tracker.minecart.world as ServerWorld,
+                        world = tracker.minecart.entityWorld as ServerWorld,
                         chunkPos =  tracker.minecart.chunkPos,
                         config = config,
                         idleCounter = 0

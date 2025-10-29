@@ -38,8 +38,7 @@ class AutonomousMinecarts(private val environment: Environment) {
 
         val chunkTicketType = ChunkTicketType(
             config.ticketDuration.toLong(),
-            false,
-            ChunkTicketType.Use.LOADING_AND_SIMULATION
+            15
         )
 
         Utils.AM_CHUNK_TICKET_TYPE = Registry.register(

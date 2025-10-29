@@ -17,7 +17,7 @@ class MinecartTracker(
      * Vector exponential moving average of cart position.
      * Used to filter out carts which are moving but not leaving a confined area.
      */
-    private var smoothedPos = minecart.pos
+    private var smoothedPos = minecart.entityPos
 
     /**
      * "Active" minecarts are minecarts which are moving in a way that satisfies the mods loading criteria.
@@ -33,11 +33,11 @@ class MinecartTracker(
     fun update(minecart: AbstractMinecartEntity) {
         this.minecart = minecart
 
-        smoothedPos = minecart.pos.multiply(config.positionAverageFactor).add(smoothedPos!!.multiply(1.0 - config.positionAverageFactor))
+        smoothedPos = minecart.entityPos.multiply(config.positionAverageFactor).add(smoothedPos!!.multiply(1.0 - config.positionAverageFactor))
 
         minecartIsActive = if (minecart.velocity.length() < config.idleThreshold) {
             false
-        } else if (smoothedPos.subtract(minecart.pos).length() < config.positionAverageDistance) {
+        } else if (smoothedPos.subtract(minecart.entityPos).length() < config.positionAverageDistance) {
             false
         } else {
             true
