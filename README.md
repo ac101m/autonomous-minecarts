@@ -4,7 +4,7 @@ Autonomous minecarts is a mod which allows minecarts to load chunks independentl
 
 The mod works by identifying moving minecarts and adding them to a list of "active" carts. Active carts are each given a chunk ticket which follows the minecart and loads a small number of chunks surrounding it. If a cart stops moving it becomes "inactive" and the chunk ticket is removed after a few minutes.
 
-_**Note:** Dimensions only tick when a player is present or there are force loaded chunks present. If you want this mod to work in dimensions when no players are present, you will need to force load at least one chunk somewhere in that dimension._
+_**Note:** In minecraft versions prior to 1.21.11, dimensions will only tick when a player is present or there are force loaded chunks present. If you are using a version prior to 1.21.11 and want this mod to work in dimensions where no players are present, you will need to force load at least one chunk somewhere in those dimensions._
 
 ## What about performance?
 
