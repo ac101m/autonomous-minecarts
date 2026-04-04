@@ -33,11 +33,11 @@ class FabricEnvironment : Environment, ModInitializer {
             plugin.beforeServerTick()
         }
 
-        ServerTickEvents.START_WORLD_TICK.register { world ->
+        ServerTickEvents.START_LEVEL_TICK.register { world ->
             plugin.beforeWorldTick(world)
         }
 
-        ServerTickEvents.END_WORLD_TICK.register { world ->
+        ServerTickEvents.END_LEVEL_TICK.register { world ->
             plugin.afterWorldTick(world)
         }
     }

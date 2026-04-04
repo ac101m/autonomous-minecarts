@@ -1,7 +1,7 @@
 plugins {
-    id 'net.fabricmc.fabric-loom-remap' version "$loom_version"
+    id 'net.fabricmc.fabric-loom' version "$loom_version"
     id 'maven-publish'
-    id "org.jetbrains.kotlin.jvm" version "2.2.0"
+    id "org.jetbrains.kotlin.jvm" version "2.3.20"
 }
 
 group 'com.ac101m'
@@ -19,12 +19,11 @@ loom {
 dependencies {
     // Core mod dependencies
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API dependencies
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-    modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
 
     // External dependencies
     implementation include("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
@@ -42,14 +41,14 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
