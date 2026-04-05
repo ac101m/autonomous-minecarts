@@ -58,6 +58,8 @@ class AutonomousMinecarts(private val environment: Environment) {
     fun onServerStart() {
         log.info("Starting autonomous minecarts...")
 
+        trackedWorlds.clear()
+
         val statePath = Path.of(environment.worldDirectory.toString(), STATE_FILE_NAME)
 
         startupState = try {
