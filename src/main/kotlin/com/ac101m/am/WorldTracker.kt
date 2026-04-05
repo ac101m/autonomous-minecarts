@@ -4,7 +4,7 @@ import com.ac101m.am.persistence.Config
 import com.ac101m.am.persistence.PersistentMinecartTicket
 import net.minecraft.world.entity.Entity
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart
+import net.minecraft.world.entity.vehicle.AbstractMinecart
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.entity.EntityTypeTest
 import org.slf4j.LoggerFactory

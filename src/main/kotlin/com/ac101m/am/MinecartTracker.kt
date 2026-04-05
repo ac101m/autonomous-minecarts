@@ -2,7 +2,7 @@ package com.ac101m.am
 
 import com.ac101m.am.Utils.Companion.multiply
 import com.ac101m.am.persistence.Config
-import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart
+import net.minecraft.world.entity.vehicle.AbstractMinecart
 
 /**
  * Tracks minecart behaviour and decides whether a cart is idle or not.

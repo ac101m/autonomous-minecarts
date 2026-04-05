@@ -27,7 +27,7 @@ class Utils {
          */
         fun MinecraftServer.getWorldByName(name: String): ServerLevel? {
             return allLevels.find { world ->
-                world.dimension().identifier().toString() == name
+                world.dimension().location().toString() == name
             }
         }
 

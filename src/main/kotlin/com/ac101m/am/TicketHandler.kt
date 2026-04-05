@@ -70,7 +70,7 @@ class TicketHandler(
             x = chunkPos.x,
             z = chunkPos.z,
             idleTicks = idleCounter,
-            worldName = world.dimension().identifier().toString()
+            worldName = world.dimension().location().toString()
         )
     }
 }
