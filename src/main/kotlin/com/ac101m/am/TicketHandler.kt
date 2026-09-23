@@ -25,7 +25,8 @@ class TicketHandler(
     }
 
     private fun createTicket(position: ChunkPos) {
-        world.createChunkTicket(Utils.AM_CHUNK_TICKET_TYPE, position, config.chunkLoadRadius)
+        // Increment the chunk radius counts entity ticking chunks
+        world.createChunkTicket(Utils.AM_CHUNK_TICKET_TYPE, position, config.chunkLoadRadius + 1)
         refreshCounter = 1
     }
 
